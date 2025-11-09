@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import json
-import time
 import asyncio
 import httpx
 
@@ -86,7 +85,7 @@ async def get_products(category, link):
             "Name": product.find("h2").text.strip(),
             "Price": get_pretty_price(product.find("div", class_="product-price__current").text.strip()),
             "Category_name": category,
-            "Category_link": link,
+            "Category_link": link.strip(),
             # "Description": description,
             "Link": HOST + product.find("a").get("href"),
             "Img": product.find("a").find("img").get("data-src")
@@ -144,6 +143,7 @@ async def main():
     products = []
     for i in range(0, len(product_tasks), 30):
         products += await asyncio.gather(*product_tasks[i:i+30])
+    print(products)
     with open("products.json", "w", encoding="utf-8") as f:
         json.dump(products, f, ensure_ascii=False, indent=4)
 if __name__ == '__main__':
